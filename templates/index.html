@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Real-Time Radiation Monitoring</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+</head>
+<body>
+    <h1>Radiation Monitoring Dashboard</h1>
+    <div id="graph"></div>
+
+    <script>
+        var socket = io.connect("http://" + document.domain + ":" + location.port);
+        var data = [{ x: [], y: [], type: "scatter", mode: "lines+markers", name: "Radiation Level" }];
+
+        var layout = { title: "Radiation Level (µSv/h)", xaxis: { title: "Time" }, yaxis: { title: "Radiation Level" } };
+        Plotly.newPlot("graph", data, layout);
+
+        socket.on("new_data", function(msg) {
+            var time = msg.time;
+            var level = msg.level;
+
+            data[0].x.push(time);
+            data[0].y.push(level);
+
+            if (data[0].x.length > 100) {
+                data[0].x.shift();
+                data[0].y.shift();
+            }
+
+            Plotly.update("graph", data);
+        });
+    </script>
+</body>
+</html>
