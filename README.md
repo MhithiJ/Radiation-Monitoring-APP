@@ -5,4 +5,4 @@ This is not perfect as it still uses readings imported randomly from created pyt
 
 Hit me up on instructions on how to test this.. It's pretty easy to check it out too tho.
 
-Thank you. ReadMe file will updated periodically.
+Thank you. ReadMe file will be updated periodically.
