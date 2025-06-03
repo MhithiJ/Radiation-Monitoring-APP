@@ -13,24 +13,29 @@
 
     <script>
         var socket = io.connect("http://" + document.domain + ":" + location.port);
-        var data = [{ x: [], y: [], type: "scatter", mode: "lines+markers", name: "Radiation Level" }];
+        var data = [{ x: [], y: [], type: "scatter", mode: "lines+markers", name: "Beta Level" }, { x: [], y: [], type: "scatter", mode: "lines+markers", name: "Gamma Level" }];
 
-        var layout = { title: "Radiation Level (µSv/h)", xaxis: { title: "Time" }, yaxis: { title: "Radiation Level" } };
+        var layout = { title: "Radiation Levels (µSv/h)", xaxis: { title: "Time" }, yaxis: { title: "Radiation Level" } };
         Plotly.newPlot("graph", data, layout);
 
         socket.on("new_data", function(msg) {
-            var time = msg.time;
-            var level = msg.level;
+            var time = new Date(msg.time);
+            var beta = msg.beta;
+            var gamma = msg.gamma;
 
             data[0].x.push(time);
-            data[0].y.push(level);
+            data[0].y.push(beta);
+            data[1].x.push(time);
+            data[1].y.push(gamma);
 
             if (data[0].x.length > 100) {
                 data[0].x.shift();
                 data[0].y.shift();
+                data[1].x.shift();
+                data[1].y.shift();
             }
 
-            Plotly.update("graph", data);
+            Plotly.update("graph", { x: [data[0].x, data[1].x], y: [data[0].y, data[1].y] }, {});
         });
     </script>
 </body>
